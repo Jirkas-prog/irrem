@@ -1,0 +1,51 @@
+# LEGACY: ukázky pro firmware 0.2 (press/hold/release).
+# Firmware 0.3 posílá univerzální event_type: command; použijte node-red/FUNCTION.md.
+# Toto není nasazené ovládání Obyvaku. Následující příklady zůstávají pro starý firmware.
+# Ukázky do seznamu automations.yaml. Nahraďte topic, jména tlačítek a entity.
+# Přesný topic zkopírujte z webu IRrem. Nevyužívejte retained /state jako trigger.
+- alias: IRrem – tlačítko přepne lampu
+  triggers:
+    - trigger: mqtt
+      topic: irrem/irrem-XXXXXXXXXXXX/trigger
+  conditions:
+    - condition: template
+      value_template: >-
+        {{ trigger.payload_json.event_type == 'press'
+           and trigger.payload_json.button == 'obyvak_zapnout' }}
+  actions:
+    - action: light.toggle
+      target:
+        entity_id: light.obyvak
+  mode: single
+
+# Jas roste podle délky držení; po 2 s dosáhne 100 %.
+# Přicházející hold události určují hodnotu. Žádná nekonečná smyčka při výpadku MQTT.
+# Krátký stisk má samostatnou malou změnu; release zachytí i poslední úsek držení.
+- alias: IRrem – podržení zvýší jas
+  triggers:
+    - trigger: mqtt
+      topic: irrem/irrem-XXXXXXXXXXXX/trigger
+  conditions:
+    - condition: template
+      value_template: >-
+        {{ trigger.payload_json.button == 'obyvak_jas_plus' }}
+  actions:
+    - choose:
+        - conditions: "{{ trigger.payload_json.event_type == 'press' }}"
+          sequence:
+            - action: light.turn_on
+              target:
+                entity_id: light.obyvak
+              data:
+                brightness_step_pct: 5
+        - conditions: >-
+            {{ trigger.payload_json.event_type in ['hold', 'release']
+               and trigger.payload_json.duration_ms | int >= 100 }}
+          sequence:
+            - action: light.turn_on
+              target:
+                entity_id: light.obyvak
+              data:
+                brightness_pct: >-
+                  {{ [100, [1, (trigger.payload_json.duration_ms | int / 20) | round(0) | int] | max] | min }}
+  mode: restart
