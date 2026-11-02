@@ -5,14 +5,14 @@ const commands=[{id:1,name:'Zapnout · bílá 36 %',code:'white/36/3000'},{id:2,
 const names=['retez_on','retez_off',...Array.from({length:8},(_,i)=>'retez_mode_'+(i+1)),'retez_timer_4h','retez_timer_6h','retez_timer_8h','retez_timer_off','retez_dim_minus','retez_dim_plus','TV_L_ON','TV_L_OFF','TV_L_100','TV_L_001'];
 let catalog={revision:1,commands,buttons:names.map((name,i)=>({id:17+i,name,key:`NEC:32:${i.toString(16).padStart(16,'0')}`,single:[1,2,6,7,8,9,10,11,12,13,14,15,16,5,4,3,1,2,13,6][i],double:0,long:i===14?4:i===15?3:0,long_ms:1000,double_ms:350,repeat_ms:350,raw:false}))};
 let nextId=37,sequence=0,virtual=null;
-const state={version:'0.3.0',device_id:'irrem-test',boot_id:'a1b2c3d4',base_topic:'wifi2mqtt',hostname:'irrem',wifi:true,ip:'192.0.2.54',rssi:-51,mqtt:true,mqtt_detail:'Připojeno',broker_host:'homeassistant.local',broker_port:1883,broker_ip:'192.0.2.234',free_heap:96000,time_synced:true,ota_available:true,ota_slot:'ota_0',events:[],received_frames:800,sent_events:20,dropped_events:0,learning:false,candidate_id:0,candidate_key:'',last_key:'RC5:12:0000000000000077'};
+const state={version:'0.3.2',device_id:'irrem-test',boot_id:'a1b2c3d4',base_topic:'wifi2mqtt',hostname:'irrem',wifi:true,ip:'192.0.2.54',rssi:-51,mqtt:true,mqtt_detail:'Připojeno',broker_host:'homeassistant.local',broker_port:1883,broker_ip:'192.0.2.234',free_heap:96000,time_synced:true,ota_available:true,ota_slot:'ota_0',events:[],received_frames:800,sent_events:20,dropped_events:0,learning:false,candidate_id:0,candidate_key:'',last_key:'RC5:12:0000000000000077'};
 const log=[];
 function event(button){const c=commands.find(c=>c.id===button.single);if(!c)return;state.events.unshift({sequence:++sequence,button:button.name,command:c.code,command_name:c.name,gesture:'single',source:'web',timestamp:new Date().toISOString()});state.events=state.events.slice(0,12);}
 const server=http.createServer(async(req,res)=>{
  try{
   const route=new URL(req.url,'http://localhost').pathname;
   if(!route.startsWith('/api/')&&route!=='/__test'){
-   const file={'/':'index.html','/app.js':'app.js','/style.css':'style.css'}[route];if(!file){res.writeHead(404);res.end();return;}
+   const file={'/':'index.html','/app.js':'app.js','/i18n.js':'i18n.js','/style.css':'style.css'}[route];if(!file){res.writeHead(404);res.end();return;}
    res.setHeader('Content-Type',file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css':'application/javascript');res.end(fs.readFileSync(path.join(web,file)));return;
   }
   const chunks=[];for await(const c of req)chunks.push(c);const bytes=Buffer.concat(chunks);const body=bytes.length&&(req.headers['content-type']||'').startsWith('application/json')?JSON.parse(bytes):{};

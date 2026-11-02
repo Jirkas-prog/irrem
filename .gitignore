@@ -27,3 +27,8 @@ PRIVATE*
 *.keystore
 *.p12
 releases/
+
+# Browser test tooling and reports
+node_modules/
+test-results/
+playwright-report/

@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11151b"><title>IRrem · ovladač</title><link rel="stylesheet" href="/style.css"><script defer src="/app.js"></script></head>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11151b"><title>IRrem · ovladač</title><link rel="stylesheet" href="/style.css"><script defer src="/i18n.js"></script><script defer src="/app.js"></script></head>
 <body><dialog id="confirm-dialog"><form method="dialog"><h2>Potvrdit změnu</h2><p id="confirm-message"></p><div class="actions"><button value="cancel" class="secondary" autofocus>Zrušit</button><button value="confirm">Potvrdit</button></div></form></dialog><a class="skip" href="#remote">Přejít k ovladači</a>
 <aside class="sidebar"><a class="brand" href="#remote">IR<span>rem</span><small>03</small></a><p class="nav-label">OVLÁDÁNÍ DOMOVA</p><nav aria-label="Hlavní navigace">
 <a href="#remote">01 <span>Ovladač</span></a><a href="#buttons">02 <span>Tlačítka</span></a><a href="#wifi">03 <span>Wi-Fi</span></a><a href="#mqtt">04 <span>MQTT</span></a><a href="#system">05 <span>Systém</span></a>
 </nav><div class="sidebar-foot">IR → Wi-Fi → MQTT<small>Všechno zůstává u vás doma.</small></div></aside>
-<div class="workspace"><header class="topbar"><strong id="header-host">irrem.local</strong><span id="connection" role="status">Připojuji…</span></header>
+<div class="workspace"><header class="topbar"><strong id="header-host">irrem.local</strong><select id="ui-language" aria-label="Jazyk / Language"><option value="en">EN · English</option><option value="cs">CZ · Čeština</option></select><span id="connection" role="status">Připojuji…</span></header>
 <main><div id="notice" role="status" aria-live="polite" hidden></div>
 <section id="page-remote" class="page"><div class="section-heading"><div><p class="eyebrow">01 / VIRTUÁLNÍ OVLADAČ</p><h1>Světlo pod palcem<span>.</span></h1></div><span id="remote-status" class="badge">MQTT —</span></div>
 <p class="hint">Klepněte, klepněte dvakrát nebo podržte. Stejné akce jako na fyzickém ovladači.</p>

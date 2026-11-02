@@ -25,7 +25,7 @@
 #include "gestures.h"
 
 using namespace remote;
-constexpr char Version[]="0.3.1";
+constexpr char Version[]="0.3.2";
 constexpr int IrPin=25, IrGround=26, IrPower=27, ScreenButton=35, SetupButton=0;
 constexpr uint32_t ConfigVersion=1, LearnTimeout=30000;
 struct LegacyMapStore { uint32_t version=ConfigVersion; unsigned count=0; Mapping items[MaxKeys]; };
@@ -440,6 +440,8 @@ extern const char indexStart[] asm("_binary_web_index_html_start");
 extern const char indexEnd[] asm("_binary_web_index_html_end");
 extern const char scriptStart[] asm("_binary_web_app_js_start");
 extern const char scriptEnd[] asm("_binary_web_app_js_end");
+extern const char i18nStart[] asm("_binary_web_i18n_js_start");
+extern const char i18nEnd[] asm("_binary_web_i18n_js_end");
 extern const char styleStart[] asm("_binary_web_style_css_start");
 extern const char styleEnd[] asm("_binary_web_style_css_end");
 static esp_err_t sendJson(httpd_req_t *request,const JsonDocument &doc,const char *status="200 OK") {
@@ -470,6 +472,7 @@ static bool certificateValid(const char *pem) {
 static esp_err_t staticFile(httpd_req_t *request) {
     const char *start=indexStart,*end=indexEnd,*type="text/html; charset=utf-8";
     if(!strcmp(request->uri,"/app.js")) { start=scriptStart; end=scriptEnd; type="text/javascript; charset=utf-8"; }
+    else if(!strcmp(request->uri,"/i18n.js")) { start=i18nStart; end=i18nEnd; type="text/javascript; charset=utf-8"; }
     else if(!strcmp(request->uri,"/style.css")) { start=styleStart; end=styleEnd; type="text/css; charset=utf-8"; }
     httpd_resp_set_type(request,type); httpd_resp_set_hdr(request,"X-Content-Type-Options","nosniff");
     httpd_resp_set_hdr(request,"Content-Security-Policy","default-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'");
@@ -479,7 +482,7 @@ static void startWeb() {
     httpd_config_t config=HTTPD_DEFAULT_CONFIG(); config.max_uri_handlers=32; config.stack_size=16384;
     config.lru_purge_enable=true; config.recv_wait_timeout=2; config.send_wait_timeout=2;
     httpd_handle_t server; ESP_ERROR_CHECK(httpd_start(&server,&config));
-    for(const char *path:{"/","/app.js","/style.css"}) {
+    for(const char *path:{"/","/app.js","/i18n.js","/style.css"}) {
         httpd_uri_t route{}; route.uri=path; route.method=HTTP_GET; route.handler=staticFile;
         ESP_ERROR_CHECK(httpd_register_uri_handler(server,&route));
     }
